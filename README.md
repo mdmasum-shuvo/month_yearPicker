@@ -23,8 +23,8 @@ Step 3. Call the MonthPickerDialog
 
 
     fun callMonthPicker() {
-        monthPicker = MonthPicker(this)
-        monthPicker.setMonthType(MonthType.TEXT)
+        monthPicker = MonthPicker(this)   //pass the activity context
+        monthPicker.setMonthType(MonthType.TEXT)  // set the type of month in dialog int or string
         monthPicker.setPositiveButton(object : DateMonthDialogListener {
             override fun onDateMonth(
                 month: Int,
