@@ -107,8 +107,10 @@ class MonthPicker {
         private val mYear: TextView
         private var year: Int
         private var month: Int
-        private val alertBuilder: AlertDialog.Builder
-        private val contentView: View
+        private val alertBuilder: AlertDialog.Builder = AlertDialog.Builder(context)
+        private val contentView: View =
+            LayoutInflater.from(context).inflate(R.layout.dialog_month_picker, null)
+
         private fun getColorByThemeAttr(context: Context, attr: Int, defaultColor: Int): Int {
             val typedValue = TypedValue()
             val theme = context.theme
@@ -209,8 +211,6 @@ class MonthPicker {
         }
 
         init {
-            alertBuilder = AlertDialog.Builder(context)
-            contentView = LayoutInflater.from(context).inflate(R.layout.dialog_month_picker, null)
             contentView.isFocusable = true
             contentView.isFocusableInTouchMode = true
             mTitleView = contentView.findViewById<View>(R.id.title) as TextView

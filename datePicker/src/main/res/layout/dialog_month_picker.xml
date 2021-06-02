@@ -31,7 +31,7 @@
                 android:orientation="horizontal"
                 android:padding="16dp">
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <TextView
                     android:id="@+id/title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -62,14 +62,14 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="5dp">
 
-                        <androidx.appcompat.widget.AppCompatImageView
+                        <ImageView
                             android:id="@+id/btn_previous"
                             android:layout_width="60dp"
                             android:layout_height="25dp"
                             android:foreground="@drawable/ripple_blue_with_shape"
                             android:src="@drawable/back" />
 
-                        <androidx.appcompat.widget.AppCompatImageView
+                        <ImageView
                             android:id="@+id/btn_next"
                             android:layout_width="60dp"
                             android:layout_height="25dp"
@@ -80,7 +80,7 @@
 
                             android:src="@drawable/forward" />
 
-                        <androidx.appcompat.widget.AppCompatTextView
+                        <TextView
                             android:id="@+id/text_year"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

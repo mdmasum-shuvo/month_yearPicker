@@ -9,7 +9,7 @@
     android:layout_margin="5dp"
     android:orientation="vertical">
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/text_month"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
