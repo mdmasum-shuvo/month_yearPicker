@@ -19,7 +19,7 @@
         <LinearLayout
             android:id="@+id/contentView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -62,22 +62,25 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="5dp">
 
-                        <ImageView
+                        <ImageButton
                             android:id="@+id/btn_previous"
-                            android:layout_width="60dp"
-                            android:layout_height="25dp"
-                            android:foreground="@drawable/ripple_blue_with_shape"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/ripple_button"
                             android:src="@drawable/back" />
 
-                        <ImageView
+                        <ImageButton
                             android:id="@+id/btn_next"
-                            android:layout_width="60dp"
-                            android:layout_height="25dp"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
                             android:layout_alignParentTop="true"
                             android:layout_alignParentEnd="true"
                             android:layout_alignParentRight="true"
-                            android:foreground="@drawable/ripple_blue_with_shape"
-
+                            android:layout_centerVertical="true"
+                            android:layout_marginEnd="8dp"
+                            android:background="@drawable/ripple_button"
                             android:src="@drawable/forward" />
 
                         <TextView

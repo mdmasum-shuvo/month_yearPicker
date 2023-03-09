@@ -1,5 +1,6 @@
 package com.example.sampleapp
 
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +10,7 @@ import com.masum.datepicker.MonthPicker
 import com.masum.datepicker.MonthType
 import com.masum.datepicker.listener.DateMonthDialogListener
 import com.masum.datepicker.listener.OnCancelMonthDialogListener
+import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
     lateinit var monthPicker: MonthPicker
@@ -44,5 +46,15 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
+        monthPicker.setLimitDate(
+            null,
+            newEndDate = Calendar.getInstance().apply {
+                set(Calendar.YEAR, 2025)
+                set(Calendar.MONTH, 8)
+            }.time
+        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            monthPicker.setLocale(resources.configuration.locales.get(0))
+        }
     }
 }
