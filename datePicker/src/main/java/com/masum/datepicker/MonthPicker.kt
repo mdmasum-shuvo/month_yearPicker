@@ -8,7 +8,6 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -97,16 +96,23 @@ class MonthPicker {
         return this
     }
 
+    fun setLimitDate(newBeginDate: Date? = null, newEndDate: Date? = null): MonthPicker {
+        builder.setLimitDate(newBeginDate, newEndDate)
+        return this
+    }
+
     fun dismiss() {
         mAlertDialog!!.dismiss()
     }
 
-    private inner class Builder() : OnSelectedListener {
+    private inner class Builder : OnSelectedListener {
         private val monthAdapter: MonthAdapter
         private val mTitleView: TextView
         private val mYear: TextView
         private var year: Int
         private var month: Int
+        private var beginDate: Date? = null
+        private var endDate: Date? = null
         private val alertBuilder: AlertDialog.Builder = AlertDialog.Builder(context)
         private val contentView: View =
             LayoutInflater.from(context).inflate(R.layout.dialog_month_picker, null)
@@ -126,9 +132,8 @@ class MonthPicker {
             year = cal[Calendar.YEAR]
             month = cal[Calendar.MONTH]
             monthAdapter.setSelectedItem(month)
-            mTitleView.text = monthAdapter.shortMonth + ", " + year
+            setTitle(monthAdapter.shortMonth, year)
             monthAdapter.notifyDataSetChanged()
-            mYear.text = year.toString() + ""
         }
 
         fun setLocale(locale: Locale?) {
@@ -137,13 +142,12 @@ class MonthPicker {
 
         fun setSelectedMonth(index: Int) {
             monthAdapter.setSelectedItem(index)
-            mTitleView.text = monthAdapter.shortMonth + ", " + year
+            setTitle(monthAdapter.shortMonth, year)
         }
 
         fun setSelectedYear(year: Int) {
             this.year = year
-            mYear.text = year.toString() + ""
-            mTitleView.text = monthAdapter.shortMonth + ", " + year
+            setTitle(monthAdapter.shortMonth, year)
         }
 
         fun setColorTheme(color: Int) {
@@ -158,10 +162,18 @@ class MonthPicker {
             monthAdapter.setMonthType(monthType!!)
         }
 
+        fun setLimitDate(newBeginDate: Date? = null, newEndDate: Date? = null) {
+            if (newBeginDate != null && newEndDate != null && newBeginDate.after(newEndDate)) return
+            beginDate = newBeginDate
+            endDate = newEndDate
+            checkMonthsEnable()
+
+        }
+
         fun build() {
             monthAdapter.setSelectedItem(month)
-            mTitleView.text = monthAdapter.shortMonth + ", " + year
-            mYear.text = year.toString() + ""
+            setTitle(monthAdapter.shortMonth, year)
+            checkMonthsEnable()
             mAlertDialog = alertBuilder.create()
             mAlertDialog!!.show()
             mAlertDialog!!.window!!.clearFlags(
@@ -176,17 +188,72 @@ class MonthPicker {
 
         fun nextButtonClick(): View.OnClickListener {
             return View.OnClickListener {
-                year++
-                mYear.text = year.toString() + ""
-                mTitleView.text = monthAdapter.shortMonth + ", " + year
+                val endDateCalendar = endDate?.let {
+                    Calendar.getInstance().apply { time = it }
+                }
+                if (endDate == null || (endDateCalendar?.get(Calendar.YEAR) != null && endDateCalendar.get(
+                        Calendar.YEAR
+                    ) > year)
+                ) {
+                    year++
+                    setTitle(monthAdapter.shortMonth, year)
+                    checkMonthsEnable()
+                }
             }
         }
 
         fun previousButtonClick(): View.OnClickListener {
             return View.OnClickListener {
-                year--
-                mYear.text = year.toString() + ""
-                mTitleView.text = monthAdapter.shortMonth + ", " + year
+                val beginDateCalendar = beginDate?.let {
+                    Calendar.getInstance().apply { time = it }
+                }
+                if (beginDate == null || (beginDateCalendar?.get(Calendar.YEAR) != null && beginDateCalendar.get(
+                        Calendar.YEAR
+                    ) < year)
+                ) {
+                    year--
+                    setTitle(monthAdapter.shortMonth, year)
+                    checkMonthsEnable()
+                }
+            }
+        }
+
+        private fun checkMonthsEnable() {
+            val array = Array(12) { true }
+            val beginDateCalendar = beginDate?.let {
+                Calendar.getInstance().apply { time = it }
+            }
+            val endDateCalendar = endDate?.let {
+                Calendar.getInstance().apply { time = it }
+            }
+            if (beginDateCalendar?.get(Calendar.YEAR) != null && beginDateCalendar.get(Calendar.YEAR) == year) {
+                for (i in 0 until beginDateCalendar.get(Calendar.MONTH)) {
+                    array[i] = false
+                }
+            }
+            if (endDateCalendar?.get(Calendar.YEAR) != null && endDateCalendar.get(Calendar.YEAR) == year) {
+                for (i in endDateCalendar.get(Calendar.MONTH) + 1 until 12) {
+                    array[i] = false
+                }
+            }
+            checkSelectedDateIsInLimit()
+
+            monthAdapter.setMonthEnable(array)
+        }
+
+        private fun checkSelectedDateIsInLimit() {
+            val selectedDate =
+                Calendar.getInstance().apply { set(year, month, 0, 0, 0, 0) }.time
+            if (beginDate != null && selectedDate.before(beginDate)) {
+                Calendar.getInstance().apply { time = beginDate!! }.let {
+                    setSelectedMonth(it.get(Calendar.MONTH))
+                    setSelectedYear(it.get(Calendar.YEAR))
+                }
+            } else if (endDate != null && selectedDate.after(endDate)) {
+                Calendar.getInstance().apply { time = endDate!! }.let {
+                    setSelectedMonth(it.get(Calendar.MONTH))
+                    setSelectedYear(it.get(Calendar.YEAR))
+                }
             }
         }
 
@@ -207,7 +274,14 @@ class MonthPicker {
         }
 
         override fun onContentSelected() {
-            mTitleView.text = monthAdapter.shortMonth + ", " + year
+            month = monthAdapter.month - 1
+            setTitle(monthAdapter.shortMonth, year)
+        }
+
+        private fun setTitle(month: String, year: Int) {
+            mTitleView.text = String.format("%s %d",
+                month.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }, year)
+            mYear.text = year.toString()
         }
 
         init {
